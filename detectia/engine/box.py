@@ -4,7 +4,6 @@ import functools
 
 import numpy as np
 import tensorflow as tf
-
 from utils import compute_iou_boxes
 
 
@@ -41,6 +40,7 @@ class BoxEncoder:
             nonlocal anchors
             _compute_iou = functools.partial(compute_iou_boxes, b2=box)
             return tf.map_fn(_compute_iou, anchors)
+
         return tf.map_fn(_compute_iou_along_boxes, boxes)
 
     @tf.function
@@ -49,7 +49,7 @@ class BoxEncoder:
         # assert num of anchors are compatible with num_scales.
         # anchor_ratio = self.config.anchors % self.config.num_scales
         anchor_ratio = 0
-        assert anchor_ratio == 0, f'Each feature scale should have same num anchors.'
+        assert anchor_ratio == 0, "Each feature scale should have same num anchors."
 
         # calculate centroid (cx,cy) and width,height of bboxes w.r.t image.
         bb_xy = (boxes[:, 0:2] + boxes[:, 2:4]) / 2
@@ -59,12 +59,14 @@ class BoxEncoder:
         normalized_boxes_top = boxes[:, 0:2] / self.input_image_shape
         normalized_boxes_bottom = boxes[:, 2:4] / self.input_image_shape
         normalized_boxes = tf.concat(
-            [normalized_boxes_top, normalized_boxes_bottom], axis=-1)
+            [normalized_boxes_top, normalized_boxes_bottom], axis=-1
+        )
 
         # convert (wh) to (0,0,w,h) points
         pseudo_bboxes = tf.concat([tf.zeros(shape=tf.shape(bb_wh)), bb_wh], axis=-1)
         pseudo_anchor_boxes = tf.concat(
-            [tf.zeros(shape=tf.shape(self.anchors)), self.anchors], axis=-1)
+            [tf.zeros(shape=tf.shape(self.anchors)), self.anchors], axis=-1
+        )
 
         # get the iou matrix for anchors.
         _best_anchors = self._best_anchors(pseudo_bboxes, pseudo_anchor_boxes)
@@ -73,31 +75,52 @@ class BoxEncoder:
         _best_anchors_ids = tf.argmax(_best_anchors, axis=-1)
         _best_anchors_ids = tf.cast(_best_anchors_ids, tf.int32)
 
+        # targets i.e level 1, 2, 3, etc.
         targets = []
         for i in range(self.num_scale_level):
-            grid = self.grids[i]
-            lower_bound = tf.cast(tf.greater(
-                i * self.num_anchors - 1, _best_anchors_ids), dtype=tf.int32)
-            upper_bound = tf.cast(tf.greater(
-                _best_anchors_ids, i * self.num_anchors + self.num_anchors), dtype=tf.int32)
-            anchors_level_ids = tf.math.logical_not(
-                tf.cast(lower_bound + upper_bound, tf.bool))
 
+            # grid shape i.e (13, 26, 52, etc)
+            grid = self.grids[i]
+
+            # init zero array target for the level.
+            target_lvl = tf.zeros(
+                shape=(grid, grid, self.num_anchors, 4), dtype=tf.float32
+            )
+
+            # calculate anchors for the current scale_level i.e (1, 2, 3)
+            lower_bound = tf.cast(
+                tf.greater(i * self.num_anchors - 1, _best_anchors_ids), dtype=tf.int32
+            )
+            upper_bound = tf.cast(
+                tf.greater(_best_anchors_ids, i * self.num_anchors + self.num_anchors),
+                dtype=tf.int32,
+            )
+            anchors_level_ids = tf.math.logical_not(
+                tf.cast(lower_bound + upper_bound, tf.bool)
+            )
+
+            # get the best match boxes with anchors in the level.
             best_boxes_lvl = tf.boolean_mask(normalized_boxes, anchors_level_ids)
             best_boxes_lvl = tf.cast(best_boxes_lvl, tf.float32)
 
+            # anchors ids at the level.
             best_anchors_ids_lvl = tf.boolean_mask(_best_anchors_ids, anchors_level_ids)
 
+            # get grid box step for the matched boxes .
             gi, gj = self._assign_grid(best_boxes_lvl, grid)
 
-            target_lvl = tf.zeros(
-                shape=(grid, grid, self.num_anchors, 4), dtype=tf.float32)
-
-            idx = tf.stack([tf.cast(gi, tf.int32), tf.cast(gj, tf.int32),
-                            tf.cast(best_anchors_ids_lvl, tf.int32)])
-
+            # update the target level array at matched anchor id with best boxes.
+            idx = tf.stack(
+                [
+                    tf.cast(gi, tf.int32),
+                    tf.cast(gj, tf.int32),
+                    tf.cast(best_anchors_ids_lvl, tf.int32),
+                ]
+            )
             idx = tf.transpose(idx)
             target_lvl = tf.tensor_scatter_nd_update(
-                target_lvl, [idx % self.num_anchors], [best_boxes_lvl])
+                target_lvl, [idx % self.num_anchors], [best_boxes_lvl]
+            )
+
             targets.append(target_lvl)
         return targets
