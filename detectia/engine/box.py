@@ -1,19 +1,31 @@
+""" Box utility classes. """
+
 import functools
-import tensorflow as tf
+
 import numpy as np
+import tensorflow as tf
+
 from utils import compute_iou_boxes
 
 
 class BoxEncoder:
+    """ a BBox encoder class. """
+
     def __init__(self, config):
         self.config = config
-        self.anchors = np.asarray(
-            [[10, 20], [30, 40], [50, 60], [200, 100]], np.float32)
-        self.input_image_shape = (416, 416)
-        self.grids = [13, 26]
+        self.anchors = config.anchors
+        self.input_image_shape = config.input_image_shape
+        self.grids = config.grids
+
+        # TODO: calculate dynamically.
         self.num_anchors = 2
         self.num_scale_level = 2
 
+    @staticmethod
+    def _assign_grid(box, grid):
+        return tf.math.floor(box[:, 0] * grid), tf.math.floor(box[:, 1] * grid)
+
+    @staticmethod
     def _best_anchors(self, boxes, anchors):
         """_best_anchors.
 
@@ -30,9 +42,6 @@ class BoxEncoder:
             _compute_iou = functools.partial(compute_iou_boxes, b2=box)
             return tf.map_fn(_compute_iou, anchors)
         return tf.map_fn(_compute_iou_along_boxes, boxes)
-
-    def _assign_grid(self, box, grid):
-        return tf.math.floor(box[:, 0] * grid), tf.math.floor(box[:, 1] * grid)
 
     @tf.function
     def compute_targets(self, boxes, class_ids):
@@ -92,12 +101,3 @@ class BoxEncoder:
                 target_lvl, [idx % self.num_anchors], [best_boxes_lvl])
             targets.append(target_lvl)
         return targets
-
-
-if __name__ == "__main__":
-    config = None
-    boxes = [[200, 100, 300, 200], [10, 20, 30, 40], [28, 38, 40, 50]]
-    boxes = np.asarray(boxes, np.float32)
-    x = BoxEncoder(config)
-    x = x.compute_targets(boxes, None)
-    breakpoint()
