@@ -22,6 +22,7 @@ class BoxEncoder:
 
     @staticmethod
     def _assign_grid(box, grid):
+        """ helper utility class. """
         return tf.math.floor(box[:, 0] * grid), tf.math.floor(box[:, 1] * grid)
 
     @staticmethod
@@ -45,6 +46,15 @@ class BoxEncoder:
 
     @tf.function
     def compute_targets(self, boxes, class_ids):
+        """compute_targets.
+        Computes targets for each scale level.
+
+        Args:
+            boxes     : boxes tensor (N, x1, y1, x2, y2).
+            class_ids : class_ids (N,)
+        Returns:
+            list of individual scale targets [(grid, grid, A, O, C)*num_scales].
+        """
 
         # assert num of anchors are compatible with num_scales.
         anchor_ratio = self.num_anchors % self.num_scales
