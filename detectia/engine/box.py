@@ -15,6 +15,7 @@ class BoxEncoder:
         self.anchors = config.anchors
         self.input_image_shape = config.input_image_shape
         self.grids = config.grids
+        self.num_classes = config.num_classes
 
         self.num_anchors = len(self.anchors) // len(self.grids)
         self.num_scales = config.level
@@ -56,8 +57,13 @@ class BoxEncoder:
         # normalize i.e 0-1 range.
         normalized_boxes_xy = bb_xy / self.input_image_shape
         normalized_boxes_wh = bb_wh / self.input_image_shape
+
+        # one hot encoding classes.
+        one_hot_classes = tf.one_hot(class_ids, self.num_classes)
+
+        # final true normalize boxes with objectness and class i.e (x, y, w, h, o, c)
         normalized_boxes = tf.concat(
-            [normalized_boxes_xy, normalized_boxes_wh], axis=-1
+            [normalized_boxes_xy, normalized_boxes_wh, tf.ones(shape=(tf.shape(class_ids)[0], 1)), one_hot_classes], axis=-1
         )
 
         # convert (wh) to (0,0,w,h) points
@@ -82,7 +88,7 @@ class BoxEncoder:
 
             # init zero array target for the level.
             target_lvl = tf.zeros(
-                shape=(grid, grid, self.num_anchors, 4), dtype=tf.float32
+                shape=(grid, grid, self.num_anchors, 5 + self.num_classes), dtype=tf.float32
             )
 
             # calculate anchors for the current scale_level i.e (1, 2, 3)

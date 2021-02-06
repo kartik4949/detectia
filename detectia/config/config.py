@@ -15,6 +15,7 @@ class Config:
         self.grids = [26, 13]
         self.level = 2
         self.input_image_shape = (416, 416)
+        self.num_classes = 2
 
     def __setattr__(self, k, v):
         self.__dict__[k] = v
