@@ -15,7 +15,6 @@ class ConfigTest(tf.test.TestCase):
     def test_overide(self):
         _default_values = [self.config.level, self.config.input_image_shape]
         self.config.override('configs/config.yaml')
-        breakpoint()
         self.assertNotAllEqual(
             [self.config.level, self.config.input_image_shape], _default_values)
 
