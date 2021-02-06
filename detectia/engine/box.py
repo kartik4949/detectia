@@ -4,7 +4,7 @@ import functools
 
 import numpy as np
 import tensorflow as tf
-from utils import compute_iou_boxes
+from .utils import compute_iou_boxes
 
 
 class BoxEncoder:
@@ -16,16 +16,15 @@ class BoxEncoder:
         self.input_image_shape = config.input_image_shape
         self.grids = config.grids
 
-        # TODO: calculate dynamically.
-        self.num_anchors = 2
-        self.num_scale_level = 2
+        self.num_anchors = len(self.anchors) // len(self.grids)
+        self.num_scales = config.level
 
     @staticmethod
     def _assign_grid(box, grid):
         return tf.math.floor(box[:, 0] * grid), tf.math.floor(box[:, 1] * grid)
 
     @staticmethod
-    def _best_anchors(self, boxes, anchors):
+    def _best_anchors(boxes, anchors):
         """_best_anchors.
 
         Args:
@@ -47,8 +46,7 @@ class BoxEncoder:
     def compute_targets(self, boxes, class_ids):
 
         # assert num of anchors are compatible with num_scales.
-        # anchor_ratio = self.config.anchors % self.config.num_scales
-        anchor_ratio = 0
+        anchor_ratio = self.num_anchors % self.num_scales
         assert anchor_ratio == 0, "Each feature scale should have same num anchors."
 
         # calculate centroid (cx,cy) and width,height of bboxes w.r.t image.
@@ -56,10 +54,10 @@ class BoxEncoder:
         bb_wh = boxes[:, 2:4] - boxes[:, 0:2]
 
         # normalize i.e 0-1 range.
-        normalized_boxes_top = boxes[:, 0:2] / self.input_image_shape
-        normalized_boxes_bottom = boxes[:, 2:4] / self.input_image_shape
+        normalized_boxes_xy = bb_xy / self.input_image_shape
+        normalized_boxes_wh = bb_wh / self.input_image_shape
         normalized_boxes = tf.concat(
-            [normalized_boxes_top, normalized_boxes_bottom], axis=-1
+            [normalized_boxes_xy, normalized_boxes_wh], axis=-1
         )
 
         # convert (wh) to (0,0,w,h) points
@@ -77,7 +75,7 @@ class BoxEncoder:
 
         # targets i.e level 1, 2, 3, etc.
         targets = []
-        for i in range(self.num_scale_level):
+        for i in range(self.num_scales):
 
             # grid shape i.e (13, 26, 52, etc)
             grid = self.grids[i]
