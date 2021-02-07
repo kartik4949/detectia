@@ -141,10 +141,13 @@ class BoxEncoder:
 
 
 class BoxDecoder:
+    """ BoxDecoder utility class. """
+
     def __init__(self, config):
         self.config = config
         self.input_shape = config.input_image_shape
 
+    @tf.function
     def decode_model_features(self, features, anchors):
         grid_shape = tf.shape(features)[1:3]
         anchors = tf.reshape(tf.constant(anchors), [1, 1, 1, len(anchors), 2])
