@@ -12,14 +12,15 @@ class Config:
 
     def __init__(self):
         # --------anchors----------
-        self.anchors = [[10, 20], [30, 40], [100, 60], [200, 150]]
+        self.anchors = [[10, 13], [16, 30], [33, 23], [30, 61], [
+            62, 45], [59, 119], [116, 90], [156, 198], [373, 326]]
 
         # individual grid dimension i.e default [13, 26, 52]
-        self.grids = [26, 13]
+        self.grids = [52, 26, 13]
 
         # num scale levels i.e default 3.
         # NOTE. len(grids == num_scales
-        self.num_scales = 2
+        self.num_scales = 3
 
         # --------input----------
         self.input_image_shape = (416, 416)
