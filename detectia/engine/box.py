@@ -149,22 +149,36 @@ class BoxDecoder:
 
     @tf.function
     def decode_model_features(self, features, anchors):
+        """decode_model_features.
+        Decodes feature ouputs from model.
+
+        Args:
+            features : model feaure ouput (B, Gi, Gj, A, (5 + C)).
+            anchors  : anchors for the feature.
+
+        Returns:
+            True box_xy, box_wh confidence and class probs.
+        """
         grid_shape = tf.shape(features)[1:3]
         anchors = tf.reshape(tf.constant(anchors), [1, 1, 1, len(anchors), 2])
 
+        # create grid tensor with relative cx, cy as values.
         grid_x = tf.tile(tf.reshape(tf.range(0, grid_shape[0]), shape=[
                          grid_shape[0], 1, 1, 1]), [1, grid_shape[0], 1, 1])
         grid_y = tf.tile(tf.reshape(tf.range(0, grid_shape[1]), shape=[
                          1, grid_shape[1], 1, 1]), [grid_shape[1], 1, 1, 1])
         grid_cells = tf.cast(tf.concat([grid_x, grid_y], axis=-1), tf.float32)
+
+        # Yolov3 https://arxiv.org/abs/1804.02767
+        # bx = sigmoid(tx) + cx
+        # bh = e^ph
         box_xy = (tf.nn.sigmoid(features[..., :2]) + grid_cells)
         box_xy = box_xy / tf.cast(grid_shape[..., ::-1], features.dtype)
-
         box_wh = tf.exp(features[..., 2:4]) * tf.cast(anchors, tf.float32)
-
         # TODO reverse the input_shape.
         box_wh = box_wh / tf.cast(self.input_shape, features.dtype)
 
+        # confidence and class probs
         confidence = tf.nn.sigmoid(features[..., 4])
         class_probs = tf.nn.sigmoid(features[..., 5:])
         return box_xy, box_wh, confidence, class_probs
