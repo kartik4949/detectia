@@ -50,7 +50,7 @@ class BoxEncoder:
         Computes targets for each scale level.
 
         Args:
-            boxes     : boxes tensor (N, x1, y1, x2, y2).
+            boxes     : boxes relative to input image. (N, x1, y1, x2, y2).
             class_ids : class_ids (N,)
         Returns:
             list of individual scale targets [(grid, grid, A, O, C)*num_scales].
@@ -138,3 +138,30 @@ class BoxEncoder:
 
             targets.append(target_lvl)
         return targets
+
+
+class BoxDecoder:
+    def __init__(self, config):
+        self.config = config
+        self.input_shape = config.input_image_shape
+
+    def decode_model_features(self, features, anchors):
+        grid_shape = tf.shape(features)[1:3]
+        anchors = tf.reshape(tf.constant(anchors), [1, 1, 1, len(anchors), 2])
+
+        grid_x = tf.tile(tf.reshape(tf.range(0, grid_shape[0]), shape=[
+                         grid_shape[0], 1, 1, 1]), [1, grid_shape[0], 1, 1])
+        grid_y = tf.tile(tf.reshape(tf.range(0, grid_shape[1]), shape=[
+                         1, grid_shape[1], 1, 1]), [grid_shape[1], 1, 1, 1])
+        grid_cells = tf.cast(tf.concat([grid_x, grid_y], axis=-1), tf.float32)
+        box_xy = (tf.nn.sigmoid(features[..., :2]) + grid_cells)
+        box_xy = box_xy / tf.cast(grid_shape[..., ::-1], features.dtype)
+
+        box_wh = tf.exp(features[..., 2:4]) * tf.cast(anchors, tf.float32)
+
+        # TODO reverse the input_shape.
+        box_wh = box_wh / tf.cast(self.input_shape, features.dtype)
+
+        confidence = tf.nn.sigmoid(features[..., 4])
+        class_probs = tf.nn.sigmoid(features[..., 5:])
+        return box_xy, box_wh, confidence, class_probs
