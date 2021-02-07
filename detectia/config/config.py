@@ -11,10 +11,20 @@ class Config:
     """ Configuration class. """
 
     def __init__(self):
+        # --------anchors----------
         self.anchors = [[10, 20], [30, 40], [100, 60], [200, 150]]
+
+        # individual grid dimension i.e default [13, 26, 52]
         self.grids = [26, 13]
-        self.level = 2
+
+        # num scale levels i.e default 3.
+        # NOTE. len(grids == num_scales
+        self.num_scales = 2
+
+        # --------input----------
         self.input_image_shape = (416, 416)
+
+        # -------classes---------
         self.num_classes = 2
 
     def __setattr__(self, k, v):

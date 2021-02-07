@@ -19,7 +19,7 @@ class TestBoxEncode(tf.test.TestCase):
             [[100, 120, 200, 202], [30, 50, 40, 80], [202, 400, 220, 410]], tf.float32)
         class_ids = tf.constant([1, 1, 0], tf.int32)
         targets = self.boxencoder.compute_targets(boxes, class_ids)
-        self.assertEqual(len(targets), self.config.level)
+        self.assertEqual(len(targets), self.config.num_scales)
 
 
 if __name__ == "__main__":

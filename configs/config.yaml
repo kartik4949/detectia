@@ -1,2 +1,2 @@
-level: 3
+num_scales: 3
 input_image_shape: (600, 600)

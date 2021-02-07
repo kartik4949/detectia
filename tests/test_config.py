@@ -13,10 +13,10 @@ class ConfigTest(tf.test.TestCase):
         self.config = Config()
 
     def test_overide(self):
-        _default_values = [self.config.level, self.config.input_image_shape]
+        _default_values = [self.config.num_scales, self.config.input_image_shape]
         self.config.override('configs/config.yaml')
         self.assertNotAllEqual(
-            [self.config.level, self.config.input_image_shape], _default_values)
+            [self.config.num_scales, self.config.input_image_shape], _default_values)
 
 
 if __name__ == "__main__":

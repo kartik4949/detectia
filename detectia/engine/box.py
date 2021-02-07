@@ -18,7 +18,7 @@ class BoxEncoder:
         self.num_classes = config.num_classes
 
         self.num_anchors = len(self.anchors) // len(self.grids)
-        self.num_scales = config.level
+        self.num_scales = config.num_scales
 
     @staticmethod
     def _assign_grid(box, grid):
