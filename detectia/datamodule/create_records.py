@@ -1,22 +1,12 @@
 """ Create TFrecords from json GTs """
-import io
-from collections import namedtuple
 import os
-import logging
-import json
-from glob import glob
 
-import numpy as np
-import cv2
-from tqdm import tqdm
-from absl import app, flags
-import pandas as pd
+from absl import logging
 import tensorflow as tf
-
-from PIL import Image
 
 
 class CreateRecords:
+    """ TFRecord Utility Class. """
     @staticmethod
     def int64_feature(value):
         return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
@@ -94,3 +84,48 @@ class CreateRecords:
             )
         )
         return tf_example
+
+    def make_fake_tfrecord(self, temp_dir):
+        """Makes fake TFRecord to test input."""
+        tfrecord_path = os.path.join(temp_dir, 'test.tfrecords')
+        writer = tf.io.TFRecordWriter(tfrecord_path)
+        encoded_jpg = tf.io.encode_jpeg(tf.ones([512, 512, 3], dtype=tf.uint8))
+        example = tf.train.Example(
+            features=tf.train.Features(
+                feature={
+                    'image/height':
+                        self.int64_feature(512),
+                    'image/width':
+                        self.int64_feature(512),
+                    'image/filename':
+                        self.bytes_feature('test_file_name.jpg'.encode(
+                            'utf8')),
+                    'image/source_id':
+                        self.bytes_feature('123456'.encode('utf8')),
+                    'image/key/sha256':
+                        self.bytes_feature('qwdqwfw12345'.encode('utf8')),
+                    'image/encoded':
+                        self.bytes_feature(encoded_jpg.numpy()),
+                    'image/format':
+                        self.bytes_feature('jpeg'.encode('utf8')),
+                    'image/object/bbox/xmin':
+                        self.float_list_feature([0.1]),
+                    'image/object/bbox/xmax':
+                        self.float_list_feature([0.1]),
+                    'image/object/bbox/ymin':
+                        self.float_list_feature([0.2]),
+                    'image/object/bbox/ymax':
+                        self.float_list_feature([0.2]),
+                    'image/object/class/text':
+                        self.bytes_list_feature(['test'.encode('utf8')]),
+                    'image/object/class/label':
+                        self.int64_list_feature([1]),
+                    'image/object/difficult':
+                        self.int64_list_feature([]),
+                    'image/object/truncated':
+                        self.int64_list_feature([]),
+                    'image/object/view':
+                        self.bytes_list_feature([]),
+                }))
+        writer.write(example.SerializeToString())
+        return tfrecord_path

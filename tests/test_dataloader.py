@@ -2,8 +2,7 @@
 from absl import logging
 import tensorflow as tf
 
-from detectia.datamodule import DataLoader
-from detectia.utils import utils
+from detectia.datamodule import DataLoader, CreateRecords
 from detectia.config import Config
 
 
@@ -13,9 +12,11 @@ class TestBoxEncode(tf.test.TestCase):
         super().setUp()
         self.config = Config()
         self.temp_dir = self.get_temp_dir()
+        self.tfrecord = CreateRecords()
 
     def test_sanity_dataloader(self):
-        _dataloader = DataLoader(utils.make_fake_tfrecord(self.temp_dir), self.config)
+        _dataloader = DataLoader(
+            self.tfrecord.make_fake_tfrecord(self.temp_dir), self.config)
         dataset = _dataloader.from_tfrecords()
         data = next(iter(dataset))
         self.assertEqual(len(data), 7)
