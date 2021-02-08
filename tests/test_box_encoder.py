@@ -10,7 +10,6 @@ class TestBoxEncode(tf.test.TestCase):
 
     def setUp(self):
         super().setUp()
-        tf.random.set_seed(111111)
         self.config = Config()
         self.boxencoder = BoxEncoder(self.config)
 
