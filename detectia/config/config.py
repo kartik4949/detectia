@@ -11,6 +11,13 @@ class Config:
     """ Configuration class. """
 
     def __init__(self):
+        # -------dataloader--------
+        self.drop_remainder = True
+        self.batch_size = 1
+        self.transformations = {'flip_left_right': None}
+        self.shard = 32
+        self.max_instances_per_image = 100
+
         # --------anchors----------
         self.anchors = [[10, 13], [16, 30], [33, 23], [30, 61], [
             62, 45], [59, 119], [116, 90], [156, 198], [373, 326]]

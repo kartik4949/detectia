@@ -59,6 +59,8 @@ class BoxEncoder:
         # assert num of anchors are compatible with num_scales.
         anchor_ratio = self.num_anchors % self.num_scales
         assert anchor_ratio == 0, "Each feature scale should have same num anchors."
+        # indices should be integer.
+        class_ids = tf.cast(class_ids, tf.int32)
 
         # calculate centroid (cx,cy) and width,height of bboxes w.r.t image.
         bb_xy = (boxes[:, 0:2] + boxes[:, 2:4]) / 2
