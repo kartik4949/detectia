@@ -171,7 +171,7 @@ class BoxDecoder:
 
         # Yolov3 https://arxiv.org/abs/1804.02767
         # bx = sigmoid(tx) + cx
-        # bh = e^ph
+        # bh = e^ph * th
         box_xy = (tf.nn.sigmoid(features[..., :2]) + grid_cells)
         box_xy = box_xy / tf.cast(grid_shape[..., ::-1], features.dtype)
         box_wh = tf.exp(features[..., 2:4]) * tf.cast(anchors, tf.float32)
