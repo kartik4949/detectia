@@ -2,6 +2,7 @@
 import os
 import io
 
+from PIL import Image
 from absl import logging
 import tensorflow as tf
 
