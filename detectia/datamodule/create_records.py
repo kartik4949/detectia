@@ -1,5 +1,6 @@
 """ Create TFrecords from json GTs """
 import os
+import io
 
 from absl import logging
 import tensorflow as tf
