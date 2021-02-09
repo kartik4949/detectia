@@ -4,10 +4,10 @@ from abc import ABC, abstractmethod, abstractproperty
 import tensorflow as tf
 from absl import logging
 
-ALLOWED_TYPES = ["categorical", "binary", "bbox"]
+ALLOWED_TYPES = ["bbox"]
 
 
-"""Funnel Abstract Class provides essential helper functions across"""
+"""BaseDataLoader Abstract Class provides essential helper functions across"""
 
 
 class BaseDataLoader(ABC):
