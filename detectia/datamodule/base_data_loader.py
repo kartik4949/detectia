@@ -114,13 +114,13 @@ class BaseDataLoader(ABC):
         Bundle inputs into a fixed length.
         """
 
-        image_id, image, bboxes, classes = args[:-3]
+        image_id, image, bboxes, classes, targets = args
         return (
             image_id,
             image,
             self._pad_data(bboxes, -1, [self.max_instances_per_image, 4]),
             self._pad_data(classes, -1, [self.max_instances_per_image, 1]),
-            *args[-3:],
+            targets,
         )
 
     @staticmethod

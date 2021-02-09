@@ -19,7 +19,7 @@ class TestBoxEncode(tf.test.TestCase):
             self.tfrecord.make_fake_tfrecord(self.temp_dir), self.config)
         dataset = _dataloader.from_tfrecords()
         data = next(iter(dataset))
-        self.assertEqual(len(data), 7)
+        self.assertEqual(len(data), 5)
 
 
 if __name__ == "__main__":

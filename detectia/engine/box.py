@@ -92,7 +92,7 @@ class BoxEncoder:
         _best_anchors_ids = tf.cast(_best_anchors_ids, tf.int32)
 
         # targets i.e level 1, 2, 3, etc.
-        targets = []
+        targets = {}
         for i in range(self.num_scales):
 
             # grid shape i.e (13, 26, 52, etc)
@@ -138,7 +138,7 @@ class BoxEncoder:
                 target_lvl, [idx % self.num_anchors], [best_boxes_lvl]
             )
 
-            targets.append(target_lvl)
+            targets.update({f'scale_level_{i+1}': target_lvl})
         return targets
 
 
