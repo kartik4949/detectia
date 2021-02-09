@@ -176,7 +176,7 @@ class DataLoader(BaseDataLoader, TFDecoderMixin):
     def encoder(self, *args):
         image_ids, images, boxes, class_ids = args
         targets = self.boxencoder.compute_targets(boxes, class_ids)
-        return image_ids, images, boxes, class_ids, *targets
+        return image_ids, images, boxes, class_ids, *targets  # noqa: E999
 
     def decoder(self, value):
         """helper decoder, a wrapper around tfrecorde decoder."""
