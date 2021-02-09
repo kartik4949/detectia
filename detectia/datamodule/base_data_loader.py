@@ -11,8 +11,8 @@ ALLOWED_TYPES = ["bbox"]
 
 
 class BaseDataLoader(ABC):
-    """Funnel.
-    Abstract Funnel Class which acts as intterface for three supported
+    """BaseDataLoader.
+    Abstract BaseDataLoader Class which acts as intterface for three supported
     Class of dataset, and provides helper functions.
     """
 
@@ -120,7 +120,7 @@ class BaseDataLoader(ABC):
             image,
             self._pad_data(bboxes, -1, [self.max_instances_per_image, 4]),
             self._pad_data(classes, -1, [self.max_instances_per_image, 1]),
-            *args[-3:]
+            *args[-3:],
         )
 
     @staticmethod
