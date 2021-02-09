@@ -3,3 +3,4 @@ numpy>=1.19.4
 Pillow>=6.0.0
 PyYAML>=5.1
 tensorflow>=2.4.0
+tensorflow-addons>=0.12
