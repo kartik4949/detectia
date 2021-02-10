@@ -6,7 +6,6 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 
 from ..augment import augmentations
-from ..register import AUG
 
 ALLOWED_TRANSFORMATIONS = [
     "flip_left_right",

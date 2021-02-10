@@ -1,8 +1,6 @@
-import os
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 
 import tensorflow as tf
-from absl import logging
 
 ALLOWED_TYPES = ["bbox"]
 
