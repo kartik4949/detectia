@@ -2,8 +2,6 @@
 import yaml
 from typing import Text, List, Dict
 import copy
-
-from absl import logging
 import tensorflow as tf
 
 

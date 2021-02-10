@@ -2,8 +2,6 @@
 
 import functools
 from typing import Text, Dict, Tuple
-
-import numpy as np
 import tensorflow as tf
 from .utils import compute_iou_boxes
 from ..config import Config

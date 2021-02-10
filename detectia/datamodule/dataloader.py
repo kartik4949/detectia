@@ -1,11 +1,9 @@
 """ BoundingBox DataLoader Class """
 import os
-import inspect
 from typing import Optional, Text, Tuple
 
 from absl import logging
 import tensorflow as tf
-import numpy as np
 
 from ..engine.box import BoxEncoder
 from .base_data_loader import BaseDataLoader
