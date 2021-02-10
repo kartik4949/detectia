@@ -1,4 +1,5 @@
 import functools
+from typing import List, Text, Tuple
 from absl import logging
 
 import numpy as np
@@ -30,11 +31,11 @@ class GridMask(object):
 
     def __init__(
         self,
-        image_shape,
-        ratio=0.6,
-        rotate=10,
-        gridmask_size_ratio=0.5,
-        fill=1,
+        image_shape: Tuple,
+        ratio: float = 0.6,
+        rotate: int = 10,
+        gridmask_size_ratio: float = 0.5,
+        fill: int = 1,
     ):
         """__init__.
 
@@ -53,7 +54,7 @@ class GridMask(object):
         self.fill = fill
 
     @staticmethod
-    def random_crop(mask, image_shape):
+    def random_crop(mask: tf.Tensor, image_shape: Tuple) -> tf.Tensor:
         """random_crop.
                 crops in middle of mask and image corners.
 
@@ -113,7 +114,7 @@ class GridMask(object):
 
         return mask
 
-    def __call__(self, image, label):
+    def __call__(self, image: tf.Tensor, label: tf.Tensor) -> (tf.Tensor, tf.Tensor):
         grid = self.mask()
         mask = self.__class__.random_crop(grid, image.shape)
         mask = tf.cast(mask, image.dtype)
@@ -232,7 +233,7 @@ class Mosaic:
         )
 
     @tf.function
-    def _mosaic(self, images, boxes, mosaic_divide_points):
+    def _mosaic(self, images: tf.Tensor, boxes: tf.Tensor, mosaic_divide_points: Tuple) -> Tuple:
         """Builds mosaic of provided images.
         Args:
           images: original single images to make mosaic.
@@ -398,8 +399,8 @@ class TransformMixin:
 
     @tf.function
     def random_rotate(
-        self, image, label, prob=0.6, range=[-25, 25], interpolation="BILINEAR"
-    ):
+            self, image: tf.Tensor, label: tf.Tensor, prob: float = 0.6, range: List = [-25, 25], interpolation: Text = "BILINEAR"
+    ) -> (tf.Tensor, tf.Tensor):
         """random_rotate.
                 Randomly rotates the given image using rotation range
                 and probablity.
@@ -428,7 +429,7 @@ class TransformMixin:
         return image, label
 
     @tf.function
-    def random_shear_x(self, image, label, prob=0.2, range=[0, 1]):
+    def random_shear_x(self, image: tf.Tensor, label: tf.Tensor, prob: float = 0.2, range: List = [0, 1]) -> (tf.Tensor, tf.Tensor):
         """random_shear_x.
                 Randomly shears the given image using shear range
                 and probablity in x direction.
@@ -451,7 +452,7 @@ class TransformMixin:
         return image, label
 
     @tf.function
-    def random_shear_y(self, image, label, prob=0.2, range=[0, 1]):
+    def random_shear_y(self, image: tf.Tensor, label: tf.Tensor, prob: float = 0.2, range: List = [0, 1]) -> (tf.Tensor, tf.Tensor):
         """random_shear_y.
                 Randomly shears the given image using shear range
                 and probablity in y direction.
@@ -475,12 +476,12 @@ class TransformMixin:
 
     def gridmask(
         self,
-        image,
-        label,
-        ratio=0.6,
-        rotate=10,
-        gridmask_size_ratio=0.5,
-        fill=1,
+        image: Tuple,
+        label: Tuple,
+        ratio: float = 0.6,
+        rotate: int = 10,
+        gridmask_size_ratio: float = 0.5,
+        fill: int = 1,
     ):
         """gridmask.
                 GridMask initializer function which intializes GridMask class.

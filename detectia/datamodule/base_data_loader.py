@@ -33,19 +33,6 @@ class BaseDataLoader(ABC):
         return self._data_path
 
     @property
-    @abstractmethod
-    def datatype(self):
-        return self._datatype
-
-    @datatype.setter
-    def datatype(self, value):
-        if value not in self.allowed_dataset_types:
-            msg = f"{value} is not in {self.allowed_dataset_types}"
-            logging.error(msg)
-            raise TypeError("Only str allowed")
-        self._data_path = value
-
-    @property
     def size(self):
         return self._size
 

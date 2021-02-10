@@ -1,3 +1,4 @@
+""" Registry for plug and play architecture. """
 import inspect
 import warnings
 from functools import partial

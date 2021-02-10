@@ -1,7 +1,7 @@
 """ BoundingBox DataLoader Class """
 import os
 import inspect
-from typing import Optional
+from typing import Optional, Text, Tuple
 
 from absl import logging
 import tensorflow as tf
@@ -37,12 +37,12 @@ class TFDecoderMixin:
         return image
 
     def _decode_boxes(self, parsed_tensors):
-        """Concat box coordinates in the format of [ymin, xmin, ymax, xmax]."""
+        """Concat box coordinates in the format of [xmin, ymin, xmax, ymax]."""
         xmin = parsed_tensors["image/object/bbox/xmin"]
         xmax = parsed_tensors["image/object/bbox/xmax"]
         ymin = parsed_tensors["image/object/bbox/ymin"]
         ymax = parsed_tensors["image/object/bbox/ymax"]
-        return tf.stack([ymin, xmin, ymax, xmax], axis=-1)
+        return tf.stack([xmin, ymin, xmax, ymax], axis=-1)
 
     def decode(self, serialized_example):
         """Decode the serialized example."""
@@ -94,10 +94,9 @@ class DataLoader(BaseDataLoader, TFDecoderMixin):
 
     def __init__(
         self,
-        data_path: str,
+        data_path: Text,
         config: Optional[dict] = None,
-        datatype="bbox",
-        training=True,
+        training: bool = True,
     ):
         """__init__.
 
@@ -106,28 +105,6 @@ class DataLoader(BaseDataLoader, TFDecoderMixin):
             please see readme file for more details on structuring.
             config: Config File for setting the required configuration of datapipeline.
             training:Traning mode on or not?
-
-        Example::
-            e.g 1
-            >> funnel = (config=config, datatype = "bbox")
-            >> data = next(iter(funnel.from_tfrecords('tfrecord_data/' , type="train")))
-
-            e.g 2:
-            class Custom(DataLoader):
-                def __init__(self, *args):
-                    super().__init__(*args)
-
-                def encoder(self,args):
-                    # should be overriden if there is a need for anchors in the model.
-
-                    image_id, image, bbox, classes = args
-                    # make custom anchors and encode the image and bboxes as per
-                    /the model need.
-                    return image, custom_anchors, classes
-            funnel = Custom()
-
-
-
         """
         if not isinstance(data_path, str):
             msg = f"datapath should be str but pass {type(data_path)}."
@@ -138,25 +115,20 @@ class DataLoader(BaseDataLoader, TFDecoderMixin):
             logging.error(msg)
             raise TypeError("Path doesnt exists")
 
-        self._datatype = "bbox"
         self._data_path = data_path
         self.config = config
         self._training = training
         self._drop_remainder = self.config.drop_remainder
-        self.augmenter = augment.Augment(self.config, datatype)
+        self.augmenter = augment.Augment(self.config)
         self._per_shard = self.config.shard
         self.max_instances_per_image = self.config.max_instances_per_image
         self.boxencoder = BoxEncoder(config)
 
     @property
-    def datatype(self):
-        return self._datatype
-
-    @property
     def classes(self):
         return self._classes
 
-    def parser(self):
+    def parser(self) -> tf.data.Dataset:
         """parser for reading images and bbox from tensor records."""
         dataset = tf.data.Dataset.list_files(
             self.data_path,
@@ -173,21 +145,22 @@ class DataLoader(BaseDataLoader, TFDecoderMixin):
             dataset = dataset.shuffle(self._per_shard)
         return dataset
 
-    def encoder(self, *args):
+    def encoder(self, *args) -> Tuple:
         image_ids, images, boxes, class_ids = args
         targets = self.boxencoder.compute_targets(boxes, class_ids)
         return image_ids, images, boxes, class_ids, targets
 
-    def decoder(self, value):
+    def decoder(self, value) -> Tuple:
         """helper decoder, a wrapper around tfrecorde decoder."""
         data = self.decode(value)
+        # TODO: remove hardcoded value.
         image_id = 1.0
         image = data["image"]
         boxes = data["groundtruth_boxes"]
         classes = data["groundtruth_classes"]
         return (image_id, image, boxes, classes)
 
-    def from_tfrecords(self):
+    def from_tfrecords(self) -> tf.data.Dataset:
         """tf_records.
         Returns a iterable tf.data dataset ,which is configured
         with the config file passed with require augmentations.

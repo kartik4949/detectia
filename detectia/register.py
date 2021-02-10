@@ -1,3 +1,4 @@
+""" Register for registering classes. """
 from .utils.registry import Registry
 
 # register for transformations

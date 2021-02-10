@@ -1,6 +1,6 @@
 import functools
 import inspect
-from typing import List
+from typing import List, Text, Dict
 
 import tensorflow as tf
 import tensorflow_addons as tfa
@@ -37,7 +37,7 @@ class Augmentation(augmentations.TransformMixin):
 
     """
 
-    def __init__(self, config: dict, transformations: dict, type: str = "bbox"):
+    def __init__(self, config: Dict, transformations: Dict, type: Text = "bbox"):
         """__init__.
                 Augmentation class provides and builds the augmentations pipe-
                 line required for tf.data iterable.
@@ -69,7 +69,7 @@ class Augmentation(augmentations.TransformMixin):
                             tf.image or TensorPipe,please visit readme section"
                 )
 
-            kwargs = kwargs if isinstance(kwargs, dict) else {}
+            kwargs = kwargs if isinstance(kwargs, Dict) else {}
 
             if hasattr(tf.image, transform):
                 transform = getattr(tf.image, transform)
@@ -97,7 +97,7 @@ class Augment(Augmentation):
     in sequential manner.
     """
 
-    def __init__(self, config: dict, datatype: str = "bbox"):
+    def __init__(self, config: Dict, datatype: Text = "bbox"):
         """__init__.
 
         Args:

@@ -53,19 +53,12 @@ class CreateRecords:
         classes = []
 
         for _, row in group.bbox.iterrows():
-            xmins.append(row["xmin"] / width)
-            xmaxs.append(row["xmax"] / width)
-            ymins.append(row["ymin"] / height)
-            ymaxs.append(row["ymax"] / height)
-            if (
-                row["xmin"] / width > 1
-                or row["ymin"] / height > 1
-                or row["xmax"] / width > 1
-                or row["ymax"] / height > 1
-            ):
-                logging.info(row)
-
+            xmins.append(row["xmin"])
+            xmaxs.append(row["xmax"])
+            ymins.append(row["ymin"])
+            ymaxs.append(row["ymax"])
             classes_text.append(row["class"].encode("utf8"))
+            # TODO: remove hardcoded class 1.
             classes.append(1)
         tf_example = tf.train.Example(
             features=tf.train.Features(
@@ -91,21 +84,21 @@ class CreateRecords:
         """Makes fake TFRecord to test input."""
         tfrecord_path = os.path.join(temp_dir, 'test.tfrecords')
         writer = tf.io.TFRecordWriter(tfrecord_path)
-        encoded_jpg = tf.io.encode_jpeg(tf.ones([512, 512, 3], dtype=tf.uint8))
+        encoded_jpg = tf.io.encode_jpeg(tf.ones([416, 416, 3], dtype=tf.uint8))
         example = tf.train.Example(
             features=tf.train.Features(
                 feature={
                     'image/height':
-                        self.int64_feature(512),
+                        self.int64_feature(416),
                     'image/width':
-                        self.int64_feature(512),
+                        self.int64_feature(416),
                     'image/filename':
                         self.bytes_feature('test_file_name.jpg'.encode(
                             'utf8')),
                     'image/source_id':
-                        self.bytes_feature('123456'.encode('utf8')),
+                        self.bytes_feature('1'.encode('utf8')),
                     'image/key/sha256':
-                        self.bytes_feature('qwdqwfw12345'.encode('utf8')),
+                        self.bytes_feature('dummyvalue'.encode('utf8')),
                     'image/encoded':
                         self.bytes_feature(encoded_jpg.numpy()),
                     'image/format':

@@ -1,16 +1,18 @@
 """ Box utility classes. """
 
 import functools
+from typing import Text, Dict, Tuple
 
 import numpy as np
 import tensorflow as tf
 from .utils import compute_iou_boxes
+from ..config import Config
 
 
 class BoxEncoder:
     """ a BBox encoder class. """
 
-    def __init__(self, config):
+    def __init__(self, config: Config):
         self.config = config
         self.anchors = config.anchors
         self.input_image_shape = config.input_image_shape
@@ -45,7 +47,7 @@ class BoxEncoder:
         return tf.map_fn(_compute_iou_along_boxes, boxes)
 
     @tf.function
-    def compute_targets(self, boxes, class_ids):
+    def compute_targets(self, boxes: tf.Tensor, class_ids: tf.Tensor) -> Dict:
         """compute_targets.
         Computes targets for each scale level.
 
@@ -145,12 +147,12 @@ class BoxEncoder:
 class BoxDecoder:
     """ BoxDecoder utility class. """
 
-    def __init__(self, config):
+    def __init__(self, config: Config):
         self.config = config
         self.input_shape = config.input_image_shape
 
     @tf.function
-    def decode_model_features(self, features, anchors):
+    def decode_model_features(self, features: tf.Tensor, anchors: tf.Tensor) -> Tuple:
         """decode_model_features.
         Decodes feature ouputs from model.
 
