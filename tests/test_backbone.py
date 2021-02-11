@@ -4,7 +4,6 @@ import tensorflow as tf
 
 import pytest
 
-from detectia.config import Config
 from detectia.engine.backbone import backbone_factory
 
 # set tensorflow random seed.
