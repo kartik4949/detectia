@@ -8,26 +8,16 @@ class Registry:
     """
 
     def __init__(self, name):
-        """__init__.
-        Args:
-            name:
-        """
         self._name = name
         self._module_dict = dict()
 
     def __len__(self):
-        """__len__."""
         return len(self._module_dict)
 
     def __contains__(self, key):
-        """__contains__.
-        Args:
-            key:
-        """
         return self.get(key) is not None
 
     def __repr__(self):
-        """__repr__."""
         format_str = (
             self.__class__.__name__ + f"(name={self._name}, "
             f"items={self._module_dict})"
@@ -36,19 +26,13 @@ class Registry:
 
     @property
     def name(self):
-        """name."""
         return self._name
 
     @property
     def module_dict(self):
-        """module_dict."""
         return self._module_dict
 
     def get(self, key):
-        """get.
-        Args:
-            key:
-        """
         return self._module_dict.get(key, None)
 
     def _register_module(self, module_class, module_name=None, force=False):
