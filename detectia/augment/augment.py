@@ -135,5 +135,5 @@ class Augment(Augmentation):
                 image = transform_func(image)
         if return_image_label:
             return image, label
-        else:
-            return image_id, image, label, classes
+
+        return image_id, image, label, classes
