@@ -4,14 +4,15 @@
   ICML'19, https://arxiv.org/abs/1905.11946
 """
 
+import os
+import re
 import collections
 import functools
 import itertools
 import math
-import os
-import re
 
 from absl import logging
+
 import numpy as np
 import tensorflow as tf
 
