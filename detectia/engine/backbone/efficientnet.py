@@ -275,7 +275,6 @@ class MBConvBlock(tf.keras.layers.Layer):
 
     def _build(self):
         """Builds block according to the arguments."""
-        # pylint: disable=g-long-lambda
         bid = itertools.count(0)
 
         def get_bn_name(): return 'tpu_batch_normalization' + ('' if not next(
@@ -283,7 +282,6 @@ class MBConvBlock(tf.keras.layers.Layer):
         cid = itertools.count(0)
         def get_conv_name(): return 'conv2d' + ('' if not next(cid) else '_' + str(
             next(cid) // 2))
-        # pylint: enable=g-long-lambda
 
         if self._block_args.super_pixel == 1:
             self.super_pixel = SuperPixel(
@@ -428,11 +426,9 @@ class MBConvBlockWithoutDepthwise(MBConvBlock):
     def _build(self):
         """Builds block according to the arguments."""
         filters = self._block_args.input_filters * self._block_args.expand_ratio
-        # pylint: disable=g-long-lambda
         cid = itertools.count(0)
         def get_conv_name(): return 'conv2d' + ('' if not next(cid) else '_' + str(
             next(cid) // 2))
-        # pylint: enable=g-long-lambda
         kernel_size = self._block_args.kernel_size
         if self._block_args.expand_ratio != 1:
             # Expansion phase:
@@ -696,10 +692,8 @@ class Model(tf.keras.Model):
                     self._blocks.append(
                         conv_block(block_args, self._global_params, name=block_name()))
             if block_args.num_repeat > 1:  # rest of blocks with the same block_arg
-                # pylint: disable=protected-access
                 block_args = block_args._replace(
                     input_filters=block_args.output_filters, strides=[1, 1])
-                # pylint: enable=protected-access
             for _ in range(block_args.num_repeat - 1):
                 self._blocks.append(
                     conv_block(block_args, self._global_params, name=block_name()))
@@ -842,7 +836,7 @@ class BlockDecoder(object):
         ]
         if block.se_ratio > 0 and block.se_ratio <= 1:
             args.append('se%s' % block.se_ratio)
-        if block.id_skip is False:  # pylint: disable=g-bool-id-comparison
+        if block.id_skip is False:
             args.append('noskip')
         if block.condconv:
             args.append('cc')
