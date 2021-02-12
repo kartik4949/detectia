@@ -1,3 +1,4 @@
+""" Augmentations Builder Class. """
 import functools
 import inspect
 from typing import List, Text, Dict

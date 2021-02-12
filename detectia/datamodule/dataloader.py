@@ -185,7 +185,6 @@ class DataLoader(BaseDataLoader, TFDecoderMixin):
             self.pad_to_fixed_len,
             num_parallel_calls=self.AUTOTUNE,
         )
-        # try if encoder is implemented.
 
         # make batches.
         dataset = dataset.batch(

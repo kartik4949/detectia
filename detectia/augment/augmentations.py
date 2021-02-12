@@ -1,3 +1,4 @@
+""" Augmentations functions. """
 import functools
 from typing import List, Text, Tuple
 from absl import logging
