@@ -124,9 +124,9 @@ class DataLoader(BaseDataLoader, TFDecoderMixin):
             logging.error(msg)
             raise TypeError("Only str allowed")
         if not os.path.exists(data_path):
-            msg = f"path doesnt exists"
+            msg = "path doesn't exists"
             logging.error(msg)
-            raise TypeError("Path doesnt exists")
+            raise TypeError(msg)
 
         self._data_path = data_path
         self.config = config
