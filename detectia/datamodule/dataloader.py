@@ -1,13 +1,28 @@
+# Copyright 2021 Kartik Sharma. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
 """ BoundingBox DataLoader Class """
 import os
 from typing import Optional, Text, Tuple
 
-from absl import logging
 import tensorflow as tf
+from absl import logging
 
+from ..augment import augment
 from ..engine.box import BoxEncoder
 from .base_data_loader import BaseDataLoader
-from ..augment import augment
+
 __all__ = ["DataLoader"]
 
 
@@ -165,9 +180,9 @@ class DataLoader(BaseDataLoader, TFDecoderMixin):
         """
         dataset = self.parser()
 
-        def decode_rawdata(input_records): return self.decoder(
-            input_records
-        )  # pylint: enable=g-long-lambda
+        def decode_rawdata(input_records):
+            return self.decoder(input_records)  # pylint: enable=g-long-lambda
+
         dataset = dataset.map(decode_rawdata, num_parallel_calls=self.AUTOTUNE)
         dataset = dataset.prefetch(self.config.batch_size)
 

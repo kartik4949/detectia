@@ -1,10 +1,26 @@
+# Copyright 2021 Kartik Sharma. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
 """ Box utility classes. """
 
 import functools
-from typing import Text, Dict, Tuple
+from typing import Dict, Text, Tuple
+
 import tensorflow as tf
-from .utils import compute_iou_boxes
+
 from ..config import Config
+from .utils import compute_iou_boxes
 
 
 class BoxEncoder:
@@ -75,7 +91,13 @@ class BoxEncoder:
 
         # final true normalize boxes with objectness and class i.e (x, y, w, h, o, c)
         normalized_boxes = tf.concat(
-            [normalized_boxes_xy, normalized_boxes_wh, tf.ones(shape=(tf.shape(class_ids)[0], 1)), one_hot_classes], axis=-1
+            [
+                normalized_boxes_xy,
+                normalized_boxes_wh,
+                tf.ones(shape=(tf.shape(class_ids)[0], 1)),
+                one_hot_classes,
+            ],
+            axis=-1,
         )
 
         # convert (wh) to (0,0,w,h) points
@@ -100,7 +122,8 @@ class BoxEncoder:
 
             # init zero array target for the level.
             target_lvl = tf.zeros(
-                shape=(grid, grid, self.num_anchors, 5 + self.num_classes), dtype=tf.float32
+                shape=(grid, grid, self.num_anchors, 5 + self.num_classes),
+                dtype=tf.float32,
             )
 
             # calculate anchors for the current scale_level i.e (1, 2, 3)
@@ -138,7 +161,7 @@ class BoxEncoder:
                 target_lvl, [idx % self.num_anchors], [best_boxes_lvl]
             )
 
-            targets.update({f'scale_level_{i+1}': target_lvl})
+            targets.update({f"scale_level_{i+1}": target_lvl})
         return targets
 
 
@@ -165,16 +188,20 @@ class BoxDecoder:
         anchors = tf.reshape(tf.constant(anchors), [1, 1, 1, len(anchors), 2])
 
         # create grid tensor with relative cx, cy as values.
-        grid_x = tf.tile(tf.reshape(tf.range(0, grid_shape[0]), shape=[
-                         grid_shape[0], 1, 1, 1]), [1, grid_shape[0], 1, 1])
-        grid_y = tf.tile(tf.reshape(tf.range(0, grid_shape[1]), shape=[
-                         1, grid_shape[1], 1, 1]), [grid_shape[1], 1, 1, 1])
+        grid_x = tf.tile(
+            tf.reshape(tf.range(0, grid_shape[0]), shape=[grid_shape[0], 1, 1, 1]),
+            [1, grid_shape[0], 1, 1],
+        )
+        grid_y = tf.tile(
+            tf.reshape(tf.range(0, grid_shape[1]), shape=[1, grid_shape[1], 1, 1]),
+            [grid_shape[1], 1, 1, 1],
+        )
         grid_cells = tf.cast(tf.concat([grid_x, grid_y], axis=-1), tf.float32)
 
         # Yolov3 https://arxiv.org/abs/1804.02767
         # bx = sigmoid(tx) + cx
         # bh = e^ph * th
-        box_xy = (tf.nn.sigmoid(features[..., :2]) + grid_cells)
+        box_xy = tf.nn.sigmoid(features[..., :2]) + grid_cells
         box_xy = box_xy / tf.cast(grid_shape[..., ::-1], features.dtype)
         box_wh = tf.exp(features[..., 2:4]) * tf.cast(anchors, tf.float32)
         # TODO reverse the input_shape.

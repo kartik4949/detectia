@@ -1,3 +1,17 @@
+# Copyright 2021 Kartik Sharma. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
 """ Registry for plug and play architecture. """
 
 
@@ -46,9 +60,7 @@ class Registry:
         if module_name is None:
             module_name = module_class.__name__
         if not force and module_name in self._module_dict:
-            raise KeyError(
-                f"{module_name} is already registered " f"in {self.name}"
-            )
+            raise KeyError(f"{module_name} is already registered " f"in {self.name}")
         self._module_dict[module_name] = module_class
 
     def register_module(self, name=None, force=False, module=None):
@@ -61,18 +73,14 @@ class Registry:
         """
 
         if module is not None:
-            self._register_module(
-                module_class=module, module_name=name, force=force
-            )
+            self._register_module(module_class=module, module_name=name, force=force)
             return module
 
         if not (name is None or isinstance(name, str)):
             raise TypeError(f"name must be a str, but got {type(name)}")
 
         def _register(cls):
-            self._register_module(
-                module_class=cls, module_name=name, force=force
-            )
+            self._register_module(module_class=cls, module_name=name, force=force)
             return cls
 
         return _register

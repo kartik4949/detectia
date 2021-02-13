@@ -1,11 +1,25 @@
+# Copyright 2021 Kartik Sharma. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
 """ Augmentations functions. """
 import functools
 from typing import List, Text, Tuple
-from absl import logging
 
 import numpy as np
 import tensorflow as tf
 import tensorflow_addons as tfa
+from absl import logging
 
 from ..register import AUG
 
@@ -66,8 +80,8 @@ class GridMask(object):
         hh, ww = mask.shape
         h, w = image_shape[:2]
         mask = mask[
-            (hh - h) // 2: (hh - h) // 2 + h,
-            (ww - w) // 2: (ww - w) // 2 + w,
+            (hh - h) // 2 : (hh - h) // 2 + h,
+            (ww - w) // 2 : (ww - w) // 2 + w,
         ]
         return mask
 
@@ -234,7 +248,9 @@ class Mosaic:
         )
 
     @tf.function
-    def _mosaic(self, images: tf.Tensor, boxes: tf.Tensor, mosaic_divide_points: Tuple) -> Tuple:
+    def _mosaic(
+        self, images: tf.Tensor, boxes: tf.Tensor, mosaic_divide_points: Tuple
+    ) -> Tuple:
         """Builds mosaic of provided images.
         Args:
           images: original single images to make mosaic.
@@ -391,7 +407,7 @@ def cut_out(
         if left + w <= img_w and top + h <= img_h:
             break
     c = np.random.uniform(v_l, v_h, (h, w, img_c))
-    image[top: top + h, left: left + w, :] = c
+    image[top : top + h, left : left + w, :] = c
     return image, label
 
 
@@ -400,7 +416,12 @@ class TransformMixin:
 
     @tf.function
     def random_rotate(
-            self, image: tf.Tensor, label: tf.Tensor, prob: float = 0.6, range: List = [-25, 25], interpolation: Text = "BILINEAR"
+        self,
+        image: tf.Tensor,
+        label: tf.Tensor,
+        prob: float = 0.6,
+        range: List = [-25, 25],
+        interpolation: Text = "BILINEAR",
     ) -> (tf.Tensor, tf.Tensor):
         """random_rotate.
                 Randomly rotates the given image using rotation range
@@ -430,7 +451,13 @@ class TransformMixin:
         return image, label
 
     @tf.function
-    def random_shear_x(self, image: tf.Tensor, label: tf.Tensor, prob: float = 0.2, range: List = [0, 1]) -> (tf.Tensor, tf.Tensor):
+    def random_shear_x(
+        self,
+        image: tf.Tensor,
+        label: tf.Tensor,
+        prob: float = 0.2,
+        range: List = [0, 1],
+    ) -> (tf.Tensor, tf.Tensor):
         """random_shear_x.
                 Randomly shears the given image using shear range
                 and probablity in x direction.
@@ -453,7 +480,13 @@ class TransformMixin:
         return image, label
 
     @tf.function
-    def random_shear_y(self, image: tf.Tensor, label: tf.Tensor, prob: float = 0.2, range: List = [0, 1]) -> (tf.Tensor, tf.Tensor):
+    def random_shear_y(
+        self,
+        image: tf.Tensor,
+        label: tf.Tensor,
+        prob: float = 0.2,
+        range: List = [0, 1],
+    ) -> (tf.Tensor, tf.Tensor):
         """random_shear_y.
                 Randomly shears the given image using shear range
                 and probablity in y direction.
