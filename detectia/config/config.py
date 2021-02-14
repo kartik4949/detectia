@@ -57,6 +57,10 @@ class Config:
         # -------classes---------
         self.num_classes = 2
 
+        # -------FPN---------
+        self.num_fpn_nodes = 3
+        self.fpn_num_filters = 32
+
     def __setattr__(self, k, v):
         self.__dict__[k] = v
 
