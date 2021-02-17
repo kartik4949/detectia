@@ -43,6 +43,7 @@ class Config:
             [156, 198],
             [373, 326],
         ]
+        self.num_anchors = 3
 
         # individual grid dimension i.e default [13, 26, 52]
         self.grids = [52, 26, 13]
@@ -60,6 +61,7 @@ class Config:
         # -------FPN---------
         self.num_fpn_nodes = 3
         self.fpn_num_filters = 32
+        self.fpn_head_convs = 3
 
     def __setattr__(self, k, v):
         self.__dict__[k] = v

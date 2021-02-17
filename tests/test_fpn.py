@@ -35,11 +35,17 @@ tf.random.set_seed(111111)
 )
 def test_sanity_fpnblock(model):
     config = Config()
+    _default_head_shapes = [[13, 13], [26, 26], [52, 52]]
     backbone = backbone_factory.get_model(model)
     intermediate_features = backbone(tf.random.uniform(shape=(1, 416, 416, 3)))
     fpnblock = fpn.FPNBlock(config)
     fpn_outputs = fpnblock(intermediate_features[1:])
-    assert len(fpn_outputs[0]) == 3
+    fpn_sequeeze_block = fpn.FPNSequeeze(config)
+    outs = fpn_sequeeze_block(fpn_outputs)
+    out_head_shapes = [list(out.shape[1:3]) for out in outs]
+    breakpoint()
+    for pred_s, original_s in zip(out_head_shapes, reversed(_default_head_shapes)):
+        assert pred_s == original_s
 
 
 if __name__ == "__main__":
