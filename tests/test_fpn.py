@@ -43,7 +43,6 @@ def test_sanity_fpnblock(model):
     fpn_sequeeze_block = fpn.FPNSequeeze(config)
     outs = fpn_sequeeze_block(fpn_outputs)
     out_head_shapes = [list(out.shape[1:3]) for out in outs]
-    breakpoint()
     for pred_s, original_s in zip(out_head_shapes, reversed(_default_head_shapes)):
         assert pred_s == original_s
 
