@@ -8,7 +8,7 @@
 - [x] Add Datamodule.
 - [x] Add Configuration.
 - [x] Add Tests.
-- [ ] Add AnchorEncoder and Decoder.
+- [x] Add AnchorEncoder and Decoder.
 - [ ] Add FPN and Model Builder.
 - [ ] Add Training Script.
 - [ ] Add Evaluators.
