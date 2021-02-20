@@ -63,6 +63,12 @@ class Config:
         self.fpn_num_filters = 32
         self.fpn_head_convs = 3
 
+        # -------Backbone------
+        self.backbone = 'efficientnet-b0'
+
+        # -------Training------
+        self.train_bn = False
+
     def __setattr__(self, k, v):
         self.__dict__[k] = v
 
