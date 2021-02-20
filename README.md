@@ -9,7 +9,7 @@
 - [x] Add Configuration.
 - [x] Add Tests.
 - [x] Add AnchorEncoder and Decoder.
-- [ ] Add FPN and Model Builder.
+- [x] Add FPN and Model Builder.
 - [ ] Add Training Script.
 - [ ] Add Evaluators.
 
