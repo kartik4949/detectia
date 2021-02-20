@@ -24,7 +24,7 @@ class SepConvUpFPNBlock(tf.keras.layers.Layer):
         super().__init__(name=name)
         self.config = config
         self.ac = tf.keras.layers.LeakyReLU()
-        self.bn = tf.keras.layers.BatchNormalization()
+        self.bn = tf.keras.layers.BatchNormalization(config.train_bn)
         self.dsc = tf.keras.layers.SeparableConv2D(
             config.fpn_num_filters, (3, 3), padding='same',
             pointwise_initializer=tf.initializers.variance_scaling(),
@@ -43,7 +43,7 @@ class SepConvFPNBlock(tf.keras.layers.Layer):
         super().__init__(name=name)
         self.config = config
         self.ac = tf.keras.layers.LeakyReLU()
-        self.bn = tf.keras.layers.BatchNormalization()
+        self.bn = tf.keras.layers.BatchNormalization(config.train_bn)
         if head:
             self.dsc = tf.keras.layers.Conv2D(
                 config.num_anchors * (config.num_classes + 5), (1, 1), use_bias=False)
