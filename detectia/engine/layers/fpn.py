@@ -123,3 +123,16 @@ class FPNSequeeze(tf.keras.layers.Layer):
                 x = self.fuse_ops[i][-1](x)
                 out_heads.append(x)
         return out_heads
+
+
+class FPNBuilder(tf.keras.layers.Layer):
+    def __init__(self, config, name='FPNBuilder'):
+        self.config = config
+        super().__init__(name=name)
+        self.fpn = FPNBlock(config)
+        self.squeeze = FPNSequeeze(config)
+
+    def call(self, out_feats, training):
+        x = self.fpn(out_feats)
+        x = self.squeeze(x)
+        return x

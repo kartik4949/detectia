@@ -38,10 +38,8 @@ def test_sanity_fpnblock(model):
     _default_head_shapes = [[13, 13], [26, 26], [52, 52]]
     backbone = backbone_factory.get_model(model)
     intermediate_features = backbone(tf.random.uniform(shape=(1, 416, 416, 3)))
-    fpnblock = fpn.FPNBlock(config)
-    fpn_outputs = fpnblock(intermediate_features[1:])
-    fpn_sequeeze_block = fpn.FPNSequeeze(config)
-    outs = fpn_sequeeze_block(fpn_outputs)
+    fpnblock = fpn.FPNBuilder(config)
+    outs = fpnblock(intermediate_features[1:])
     out_head_shapes = [list(out.shape[1:3]) for out in outs]
     for pred_s, original_s in zip(out_head_shapes, reversed(_default_head_shapes)):
         assert pred_s == original_s
