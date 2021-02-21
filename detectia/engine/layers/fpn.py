@@ -13,7 +13,6 @@
 # limitations under the License.
 # ==============================================================================
 """ Feature Pyramind Network Keras Layer. """
-import functools
 from typing import Optional, Text
 
 import tensorflow as tf
@@ -146,13 +145,13 @@ class FPNSequeeze(tf.keras.layers.Layer):
         for i in range(len(out_feats)):
             out_feat = out_feats[-(i + 1)]
             if i == 0:
-                x = self.fuse_ops[i][0](out_feat)
+                x = self.fuse_ops[i][0](out_feat, training=training)
             else:
                 x = tf.concat([x, out_feat], axis=-1)
                 x = self.fuse_ops[i][0](x)
                 for _fuse_op in self.fuse_ops[i][1]:
-                    x = _fuse_op(x)
-                x = self.fuse_ops[i][-1](x)
+                    x = _fuse_op(x, training=training)
+                x = self.fuse_ops[i][-1](x, training=training)
                 out_heads.append(x)
         return out_heads
 
@@ -168,6 +167,6 @@ class FPNBuilder(tf.keras.layers.Layer):
         self.squeeze = FPNSequeeze(config)
 
     def call(self, out_feats, training):
-        x = self.fpn(out_feats)
-        x = self.squeeze(x)
+        x = self.fpn(out_feats, training=training)
+        x = self.squeeze(x, training=training)
         return x

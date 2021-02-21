@@ -58,7 +58,7 @@ def test_mosaic_augmentation(shape, n_boxes):
     bboxes = tf.random.uniform(
         shape=(4, n_boxes, 4), minval=1, maxval=511, dtype=tf.int32
     )
-    transform_images, mosaic_boxes = augmentations.Mosaic()(images, bboxes)
+    _, mosaic_boxes = augmentations.Mosaic()(images, bboxes)
     assert n_boxes == mosaic_boxes[0].shape[0]
 
 
