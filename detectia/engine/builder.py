@@ -13,10 +13,13 @@
 # limitations under the License.
 # ==============================================================================
 """ Model Builder Class. """
+from typing import Optional
+
 import tensorflow as tf
 
 from .backbone import backbone_factory
 from .layers import fpn
+from ..config import Config
 
 
 class ModelBuilder(tf.keras.Model):
@@ -26,7 +29,7 @@ class ModelBuilder(tf.keras.Model):
 
     """
 
-    def __init__(self, config, **kwargs):
+    def __init__(self, config: Config, **kwargs):
         super().__init__(**kwargs)
         self._name = 'DetectiaNet'
         self.backbone = backbone_factory.get_model(config.backbone)

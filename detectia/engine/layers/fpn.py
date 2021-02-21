@@ -14,9 +14,12 @@
 # ==============================================================================
 """ Feature Pyramind Network Keras Layer. """
 import functools
+from typing import Optional, Text
 
 import tensorflow as tf
 from absl import logging
+
+from ...config import Config
 
 
 class SepConvUpFPNBlock(tf.keras.layers.Layer):
@@ -25,7 +28,7 @@ class SepConvUpFPNBlock(tf.keras.layers.Layer):
     UpSampling2D.
     """
 
-    def __init__(self, config, name='SPUpConvBlock', **kwargs):
+    def __init__(self, config: Config, name: Text = 'SPUpConvBlock', **kwargs):
         super().__init__(name=name)
         self.config = config
         self.ac = tf.keras.layers.LeakyReLU()
@@ -48,7 +51,8 @@ class SepConvFPNBlock(tf.keras.layers.Layer):
     Seperable Convolutions BatchNorm Activation Block.
     """
 
-    def __init__(self, config, name='SPConvBlock', head=False, **kwargs):
+    def __init__(self, config: Config, name: Text = 'SPConvBlock', head: Optional[bool] = False, **kwargs):
+
         super().__init__(name=name)
         self.config = config
         self.ac = tf.keras.layers.LeakyReLU()
@@ -84,7 +88,7 @@ class FPNBlock(tf.keras.layers.Layer):
 
     """
 
-    def __init__(self, config, name='fpn_block'):
+    def __init__(self, config: Config, name: Text = 'fpn_block'):
         super().__init__(name=name)
         self.config = config
         self._fpn_block = []
@@ -118,7 +122,7 @@ class FPNSequeeze(tf.keras.layers.Layer):
 
     """
 
-    def __init__(self, config, name='FPNSequeeze'):
+    def __init__(self, config: Config, name: Text = 'FPNSequeeze'):
         self.config = config
         super().__init__(name=name)
         self.fuse_ops = []
@@ -157,7 +161,7 @@ class FPNBuilder(tf.keras.layers.Layer):
     """FPN Builder Class which consolidates fpn block and fpn squeeze.
     """
 
-    def __init__(self, config, name='FPNBuilder'):
+    def __init__(self, config: Config, name: Text = 'FPNBuilder'):
         self.config = config
         super().__init__(name=name)
         self.fpn = FPNBlock(config)
