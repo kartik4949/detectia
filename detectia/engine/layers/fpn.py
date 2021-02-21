@@ -20,6 +20,11 @@ from absl import logging
 
 
 class SepConvUpFPNBlock(tf.keras.layers.Layer):
+    """SepConvUpFPNBlock.
+    Seperable Convolutions BatchNorm Activation Block with
+    UpSampling2D.
+    """
+
     def __init__(self, config, name='SPUpConvBlock', **kwargs):
         super().__init__(name=name)
         self.config = config
@@ -39,6 +44,10 @@ class SepConvUpFPNBlock(tf.keras.layers.Layer):
 
 
 class SepConvFPNBlock(tf.keras.layers.Layer):
+    """SepConvUpFPNBlock.
+    Seperable Convolutions BatchNorm Activation Block.
+    """
+
     def __init__(self, config, name='SPConvBlock', head=False, **kwargs):
         super().__init__(name=name)
         self.config = config
@@ -61,6 +70,20 @@ class SepConvFPNBlock(tf.keras.layers.Layer):
 
 
 class FPNBlock(tf.keras.layers.Layer):
+    """FPNBlock class which process the input features maps from backbone
+    network.
+
+    ::
+
+    Example:
+        # Builds FPN block.
+        fpn_block = FPNBlock(config)
+
+        # fpn_block out features.
+        fpn_outs = fpn_block(backbone_feats)
+
+    """
+
     def __init__(self, config, name='fpn_block'):
         super().__init__(name=name)
         self.config = config
@@ -90,6 +113,11 @@ class FPNBlock(tf.keras.layers.Layer):
 
 
 class FPNSequeeze(tf.keras.layers.Layer):
+    """FPN Sequeeze block which concats residuals from previous fpn block.
+    A efficientdet inspired fpn block structure.
+
+    """
+
     def __init__(self, config, name='FPNSequeeze'):
         self.config = config
         super().__init__(name=name)
@@ -126,6 +154,9 @@ class FPNSequeeze(tf.keras.layers.Layer):
 
 
 class FPNBuilder(tf.keras.layers.Layer):
+    """FPN Builder Class which consolidates fpn block and fpn squeeze.
+    """
+
     def __init__(self, config, name='FPNBuilder'):
         self.config = config
         super().__init__(name=name)

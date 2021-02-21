@@ -20,7 +20,11 @@ from .layers import fpn
 
 
 class ModelBuilder(tf.keras.Model):
-    """ Model Builder. """
+    """ Model Builder.
+    DetectiaNet SubClassed keras Model class to build model for
+    training and inference.
+
+    """
 
     def __init__(self, config, **kwargs):
         super().__init__(**kwargs)
@@ -30,10 +34,20 @@ class ModelBuilder(tf.keras.Model):
 
     @property
     def name(self):
+        """ name property. """
         return self._name
 
-    def call(self, input_image, training=False):
-        """ DetectiaNet Call Method. """
+    def call(self, input_image: tf.Tensor, training: Optional[bool] = False):
+        """ DetectiaNet Call Method.
+        Calculates detections using input image.
+
+        Args:
+            input_image: input image tensor.
+            training: is training?.
+        """
+        # get intermediate features from backbone.
         feats = self.backbone(input_image)
+
+        # get  the detectionds from multi heads using the intermediate feats.
         detection_head_outs = self.fpn(feats)
         return detection_head_outs
