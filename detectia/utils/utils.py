@@ -15,9 +15,9 @@
 """ Utilities for training and other modules. """
 
 
-def init_tpu_resolver(tpu):
+def init_tpu_resolver(tpu, zone, project):
     resolver = tf.distribute.cluster_resolver.TPUClusterResolver(
-        tpu=tpu)
+        tpu=tpu, zone=zone, project=project)
     tf.config.experimental_connect_to_cluster(resolver)
     # This is the TPU initialization code that has to be at the beginning.
     tf.tpu.experimental.initialize_tpu_system(resolver)

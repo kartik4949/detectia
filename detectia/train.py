@@ -28,6 +28,14 @@ flags.DEFINE_string(
     help='The Cloud TPU to use for training. This should be either the name '
     'used when creating the Cloud TPU, or a grpc://ip.address.of.tpu:8470 '
     'url.')
+flags.DEFINE_string(
+    'project',
+    default=None,
+    help='Project name for the Cloud TPU')
+flags.DEFINE_string(
+    'zone',
+    default=None,
+    help='GCE zone of the TPU.')
 flags.DEFINE_enum('strategy', None, ['tpu', 'multi_gpu', 'default'],
                   'Training: gpus for multi-gpu, if None, use TF default.')
 
@@ -35,7 +43,7 @@ FLAGS = flags.FLAGS
 
 RESOLVER = None
 if FLAGS.tpu:
-    RESOLVER = utils.init_tpu_resolver(FLAGS.tpu)
+    RESOLVER = utils.init_tpu_resolver(FLAGS.tpu, FLAGS.zone, FLAGS.project)
 else:
     logging.info('## Not Using TPU for Training ##')
 
