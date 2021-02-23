@@ -12,3 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+""" Utilities for training and other modules. """
+
+
+def init_tpu_resolver(tpu):
+    resolver = tf.distribute.cluster_resolver.TPUClusterResolver(
+        tpu=tpu)
+    tf.config.experimental_connect_to_cluster(resolver)
+    # This is the TPU initialization code that has to be at the beginning.
+    tf.tpu.experimental.initialize_tpu_system(resolver)
+    print("All devices: ", tf.config.list_logical_devices('TPU'))
+    return resolver
